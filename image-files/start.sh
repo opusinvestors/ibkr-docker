@@ -12,7 +12,7 @@ rm -f /tmp/.X0-lock
 Xvnc -SecurityTypes None -AlwaysShared=1 -geometry 1920x1080 :0 &
 
 # Start noVNC server
-./noVNC/utils/novnc_proxy --vnc localhost:5900 --listen localhost:${VNC_SERVER_PORT} &
+./noVNC/utils/novnc_proxy --vnc localhost:5900 --listen ${VNC_SERVER_HOST:-localhost}:${VNC_SERVER_PORT} &
 
 # Start openbox
 openbox &
