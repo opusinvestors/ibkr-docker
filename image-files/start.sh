@@ -12,7 +12,7 @@ rm -f /tmp/.X0-lock
 Xvnc -SecurityTypes None -AlwaysShared=1 -geometry 1920x1080 :0 &
 
 # Start noVNC server
-./noVNC/utils/novnc_proxy --vnc localhost:5900 &
+./noVNC/utils/novnc_proxy --vnc localhost:5900 --listen localhost:${VNC_SERVER_PORT} &
 
 # Start openbox
 openbox &
@@ -48,8 +48,15 @@ else
     port=7497
 fi
 
+if ! [[ -z ${IBC_OverrideTwsApiPort} ]]; then
+    port=${IBC_OverrideTwsApiPort}
+fi
+
+extport=${IBKR_API_PORT:-8888}
+
 printf "Listening for incoming API connections on %s\n" $port
-socat -d -d TCP-LISTEN:8888,fork TCP:127.0.0.1:${port} &
+printf "and redirecting them to %s\n" $extport
+socat -d -d TCP-LISTEN:${extport},fork TCP:127.0.0.1:${port} &
 
 # Hacky way to get the major version for IB Gateway/TWS
 TWS_MAJOR_VERSION=$(ls ~/Jts/ibgateway/.)
